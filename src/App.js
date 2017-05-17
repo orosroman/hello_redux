@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+import {Link} from 'react-router';
 
-import {connect} from 'react-redux'
+import {asyncGetTracks} from './actions/tracks';
+import Menu from './Menu';
 
 class App extends Component {
   addTrack() {
@@ -16,8 +19,10 @@ class App extends Component {
 
   render() {
     console.log(this.props.tracks);
+    console.log("ownProps: ", this.props.ownProps);
     return (
       <div>
+        <Menu />
         <div>
           <input type='text' ref={(input) => {this.trackInput = input}} />
           <button onClick={this.addTrack.bind(this)}>Add track</button>
@@ -31,7 +36,9 @@ class App extends Component {
         </div>
         <ul>
           {this.props.tracks.map((track, index) =>
-            <li key={index}>{track.name}</li>
+            <li key={index}>
+              <Link to={`/tracks/${track.id}`}>{track.name}</Link>
+            </li>
           )}
         </ul>
       </div>
@@ -40,13 +47,14 @@ class App extends Component {
 }
 
 export default connect(
-  state => ({
-    tracks: state.tracks.filter(track => track.name.includes(state.filterTracks))
+  (state, ownProps) => ({
+    tracks: state.tracks.filter(track => track.name.includes(state.filterTracks)),
+    ownProps
   }),
   dispatch => ({
     onAddTrack: (name) => {
       const payload = {
-        id: Date.now().toString(),
+        id: Number(Date.now()),
         name
       }
       dispatch({type: 'ADD_TRACK', payload})
@@ -55,14 +63,6 @@ export default connect(
       dispatch({type: 'FIND_TRACKS', payload: name})
     },
     onGetTracks: () => {
-      const asyncGetTracks = () => {
-        return dispatch => {
-          setTimeout(() => {
-            console.log('I got tracks');
-            dispatch({type: 'FETCH_TRACKS_SUCCESS', payload: []});
-          }, 2000)
-        }
-      }
       dispatch(asyncGetTracks())
     }
   })

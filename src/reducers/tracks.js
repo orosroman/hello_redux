@@ -1,4 +1,13 @@
-const initialState = [];
+const initialState = [
+  {
+        id: 1,
+        name: 'Track 1'
+    },
+    {
+        id: 2,
+        name: 'Track 2'
+    }
+];
 
 export default function tracks(state = initialState, action) {
   if (action.type === 'ADD_TRACK') {
@@ -6,8 +15,8 @@ export default function tracks(state = initialState, action) {
       ...state,
       action.payload
     ];
-  } else if (action.type === 'DELETE_TRACK') {
-    return state;
+  } else if (action.type === 'FETCH_TRACKS_SUCCESS') {
+    return action.payload;
   }
   return state;
 }
